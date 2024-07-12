@@ -29,6 +29,7 @@ const Users = ({ users, queryParams, getAllUserData, setQueryParams }) => {
             await getAllUserData();
 
             setModalOpen(false);
+            form.resetFields();
         } catch (error) {
             if (error?.response?.data?.message) {
                 toast.error(error.response.data.message);
