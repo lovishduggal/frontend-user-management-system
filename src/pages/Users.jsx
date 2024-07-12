@@ -30,7 +30,7 @@ const Users = ({ users, queryParams, setQueryParams }) => {
     const onFilterChange = (changeFields) => {
         const changedFilterFields = changeFields
             .map((item) => ({
-                [item.name[0]]: item.value,
+                [item.name[0]]: item?.value?.replace(/\s/g, ''),
             }))
             .reduce((prev, curr) => ({ ...prev, ...curr }), {});
 
@@ -87,7 +87,6 @@ const Users = ({ users, queryParams, setQueryParams }) => {
                                 pageSize: queryParams.perPage,
                                 current: queryParams.currentPage,
                                 onChange: (page) => {
-                                    console.log(page);
                                     setQueryParams((prev) => {
                                         return { ...prev, currentPage: page };
                                     });
