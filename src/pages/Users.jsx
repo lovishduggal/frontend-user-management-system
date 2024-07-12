@@ -16,6 +16,7 @@ const Users = ({ users, queryParams, getAllUserData, setQueryParams }) => {
     const handleCancel = () => {
         setModalOpen(false);
         setLoading(false);
+        form.resetFields();
     };
 
     const handleSubmit = async () => {
