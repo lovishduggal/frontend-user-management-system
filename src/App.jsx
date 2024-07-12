@@ -3,15 +3,8 @@ import { useEffect, useState } from 'react';
 import { getAllUser } from './http/api';
 import { PER_PAGE } from './constants';
 import Users from './pages/Users';
-
-function buildQueryString(queryParams) {
-    const filteredParams = Object.entries(queryParams).filter(
-        (item) => !!item[1]
-    );
-
-    const queryString = new URLSearchParams(filteredParams).toString();
-    return queryString;
-}
+import { buildQueryString } from './utils';
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
     const [users, setUsers] = useState([]);
@@ -20,7 +13,7 @@ function App() {
         currentPage: 1,
     });
 
-    const getAllUserData = async (queryString) => {
+    const getAllUserData = async (queryString = '') => {
         const response = await getAllUser(queryString);
         const usersData = response.data;
 
@@ -33,11 +26,16 @@ function App() {
     }, [queryParams]);
 
     return (
-        <Users
-            users={users}
-            queryParams={queryParams}
-            setQueryParams={setQueryParams}
-        />
+        <>
+            {' '}
+            <Users
+                users={users}
+                queryParams={queryParams}
+                getAllUserData={getAllUserData}
+                setQueryParams={setQueryParams}
+            />
+            <Toaster />
+        </>
     );
 }
 

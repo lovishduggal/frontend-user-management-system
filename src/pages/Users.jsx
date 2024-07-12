@@ -1,23 +1,44 @@
-import { AutoComplete, Button, Card, Col, Flex, Form, Row, Table } from 'antd';
+import { Button, Card, Col, Flex, Form, Row, Table } from 'antd';
 import { columns } from '../constants';
 import UserFilter from './UserFilter';
-import { useMemo } from 'react';
-import { debounce } from 'lodash';
+import { useMemo, useState } from 'react';
+import { debounce, set } from 'lodash';
+import UserForm from './UserForm';
+import { createUser, getAllUser } from '../http/api';
+import toast from 'react-hot-toast';
 
-const options = [
-    {
-        value: 'Burns Bay Road',
-    },
-    {
-        value: 'Downing Street',
-    },
-    {
-        value: 'Wall Street',
-    },
-];
-
-const Users = ({ users, queryParams, setQueryParams }) => {
+const Users = ({ users, queryParams, getAllUserData, setQueryParams }) => {
     const [filterForm] = Form.useForm();
+    const [form] = Form.useForm();
+    const [openModel, setModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleCancel = () => {
+        setModalOpen(false);
+        setLoading(false);
+    };
+
+    const handleSubmit = async () => {
+        try {
+            await form.validateFields();
+
+            setLoading(true);
+
+            const formData = form.getFieldsValue();
+            await createUser(formData);
+            await getAllUserData();
+
+            setModalOpen(false);
+        } catch (error) {
+            if (error?.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('All fields are required.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const debounceQUpdate = useMemo(() => {
         return debounce((q) => {
@@ -64,13 +85,17 @@ const Users = ({ users, queryParams, setQueryParams }) => {
                         onFieldsChange={onFilterChange}
                         style={{ marginBottom: '25px' }}>
                         <UserFilter searchedUsers={users}>
-                            <Button>Add User</Button>
+                            <Button onClick={() => setModalOpen(true)}>
+                                Add User
+                            </Button>
                         </UserFilter>
                     </Form>
                     <Card bordered={true}>
                         <Flex vertical style={{ marginBottom: '20px' }}>
                             <h1>User Details</h1>
-                            <h6>View and Manage user information</h6>
+                            <h5 style={{ fontWeight: 'normal' }}>
+                                View and Manage user information
+                            </h5>
                         </Flex>
                         <Table
                             loading={
@@ -95,6 +120,13 @@ const Users = ({ users, queryParams, setQueryParams }) => {
                                     `Showing ${range[0]}-${range[1]} of ${total} items`,
                             }}
                         />
+                        <Form form={form}>
+                            <UserForm
+                                openModel={openModel}
+                                handleCancel={handleCancel}
+                                loading={loading}
+                                handleSubmit={handleSubmit}></UserForm>
+                        </Form>
                     </Card>
                 </Flex>
             </Col>

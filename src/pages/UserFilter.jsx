@@ -1,8 +1,6 @@
 import { AutoComplete, Flex, Form } from 'antd';
-import { useState } from 'react';
 
 const UserFilter = ({ searchedUsers, children }) => {
-    const [filterUser, setFilterUser] = useState('');
     const manipulatedSearchedUsers = searchedUsers?.data?.map((user) => {
         return {
             key: user._id,
