@@ -28,7 +28,6 @@ const Users = ({ users, queryParams, setQueryParams }) => {
     }, []);
 
     const onFilterChange = (changeFields) => {
-        console.log(changeFields);
         const changedFilterFields = changeFields
             .map((item) => ({
                 [item.name[0]]: item.value,
